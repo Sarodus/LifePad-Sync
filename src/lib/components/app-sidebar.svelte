@@ -16,6 +16,11 @@
 				name: 'Gallery',
 				url: '/gallery',
 				icon: Image
+			},
+			{
+				name: 'LifePad Emulator',
+				url: '/lifepad',
+				icon: Joystick
 			}
 		]
 	};
@@ -23,7 +28,7 @@
 
 <script lang="ts">
 	import * as Sidebar from '$lib/components/ui/sidebar/index.js';
-	import { Activity, Image } from '@lucide/svelte';
+	import { Activity, Image, Joystick } from '@lucide/svelte';
 	import type { ComponentProps } from 'svelte';
 	import NavProjects from './nav-projects.svelte';
 	import NavTitle from './nav-title.svelte';
