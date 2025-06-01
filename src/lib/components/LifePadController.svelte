@@ -23,6 +23,10 @@
 
 	$effect(() => {
 		status.id && connectToWs(status.id);
+		return () => {
+			clearTimeout(reconnectTimeout);
+			ws?.close();
+		};
 	});
 
 	function connectToWs(id: string) {
