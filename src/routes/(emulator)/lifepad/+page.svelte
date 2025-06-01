@@ -1,17 +1,17 @@
 <script lang="ts">
-	import LifePad from '$lib/components/LifePad.svelte';
+	import LifePadController from '$lib/components/LifePadController.svelte';
 	import { nanoid } from 'nanoid';
 	import { onMount } from 'svelte';
+
+	let id = $state<string | undefined>();
 
 	onMount(() => {
 		id = nanoid();
 	});
-
-	let id = $state<string>();
 </script>
 
 <div class="h-dvh w-full">
 	{#if id}
-		<LifePad {id} class="size-full" />
+		<LifePadController {id} class="size-full" />
 	{/if}
 </div>

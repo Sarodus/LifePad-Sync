@@ -1,57 +1,33 @@
 <script lang="ts">
+	import type { LifepadStatus } from '$lib/types';
 	import { cn } from '$lib/utils';
 	import { Minus, Plus } from '@lucide/svelte';
 
 	type Props = {
-		id: string;
+		status: LifepadStatus;
 		class?: string;
+		sendCommand?: (cmd: string, payload: string | number) => void;
 	};
 
-	let { id, class: className }: Props = $props();
-
-	type Status = {
-		id: string;
-		connected: boolean;
-		life: number;
-		background: string;
-		image: string;
-		foreground: string;
-	};
-
-	let status = $state<Status>({
-		id,
-		connected: false,
-		life: 20,
-		background: '#000000',
-		image: '',
-		foreground: '#ffffff'
-	});
+	let { status, class: className, sendCommand }: Props = $props();
 
 	let lastLife = $state<number | undefined>();
 	let lastLifeTimeout: NodeJS.Timeout;
+	// if (!lastLife) {
+	// 	lastLife = status.life;
+	// }
 
-	function command(cmd: string, payload: string | number) {
-		switch (cmd) {
-			case 'life':
-				if (!lastLife) {
-					lastLife = status.life;
-				}
-
-				status.life = payload as number;
-
-				clearTimeout(lastLifeTimeout);
-				lastLifeTimeout = setTimeout(() => {
-					lastLife = undefined;
-				}, 4000);
-				break;
-		}
-	}
+	// clearTimeout(lastLifeTimeout);
+	// lastLifeTimeout = setTimeout(() => {
+	// 	lastLife = undefined;
+	// }, 4000);
 </script>
 
 <div
 	class={cn('relative flex size-80 items-center justify-center rounded-lg border', className)}
 	style:background-color={status.background}
 	style:background-image="url({status.image})"
+	style:background-size="cover"
 	style:color={status.foreground}
 >
 	<span class="text-8xl font-bold">{status.life}</span>
@@ -65,14 +41,14 @@
 	{/if}
 
 	<button
-		class="absolute top-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center rounded-full"
-		onclick={() => command('life', status.life + 1)}
+		class="absolute top-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center"
+		onclick={() => sendCommand?.('life', status.life + 1)}
 	>
 		<Plus class="size-6" />
 	</button>
 	<button
-		class="absolute bottom-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center rounded-full"
-		onclick={() => command('life', status.life - 1)}
+		class="absolute bottom-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center"
+		onclick={() => sendCommand?.('life', status.life - 1)}
 	>
 		<Minus class="size-6" />
 	</button>
