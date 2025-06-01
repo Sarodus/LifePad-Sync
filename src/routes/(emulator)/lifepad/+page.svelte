@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LifePadController from '$lib/components/LifePadController.svelte';
+	import LifePadController from '$lib/components/lifepad/LifePadController.svelte';
 	import { nanoid } from 'nanoid';
 	import { onMount } from 'svelte';
 

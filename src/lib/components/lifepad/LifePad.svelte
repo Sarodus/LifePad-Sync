@@ -3,8 +3,8 @@
 	import type { LifepadStatus } from '$lib/types';
 	import { cn } from '$lib/utils';
 	import { Minus, Plus, Settings, X } from '@lucide/svelte';
-	import { debounceState } from '../../utils.svelte';
-	import Button from './ui/button/button.svelte';
+	import { debounceState } from '../../../utils.svelte';
+	import Button from '../ui/button/button.svelte';
 
 	type Props = {
 		status: LifepadStatus;
