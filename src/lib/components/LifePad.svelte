@@ -27,22 +27,21 @@
 		foreground: '#ffffff'
 	});
 
-	let temporalChange = $state<number | undefined>();
-	let temporalChangeTimeout: NodeJS.Timeout;
+	let lastLife = $state<number | undefined>();
+	let lastLifeTimeout: NodeJS.Timeout;
 
 	function command(cmd: string, payload: string | number) {
 		switch (cmd) {
 			case 'life':
-				status.life += payload as number;
-
-				clearTimeout(temporalChangeTimeout);
-				if (!temporalChange) {
-					temporalChange = 0;
+				if (!lastLife) {
+					lastLife = status.life;
 				}
-				temporalChange += payload as number;
 
-				temporalChangeTimeout = setTimeout(() => {
-					temporalChange = undefined;
+				status.life = payload as number;
+
+				clearTimeout(lastLifeTimeout);
+				lastLifeTimeout = setTimeout(() => {
+					lastLife = undefined;
 				}, 4000);
 				break;
 		}
@@ -57,23 +56,23 @@
 >
 	<span class="text-8xl font-bold">{status.life}</span>
 
-	{#if temporalChange !== undefined}
+	{#if lastLife !== undefined}
 		<span
 			class="absolute top-1/2 right-1/5 flex -translate-y-1/2 items-center justify-center text-2xl font-bold"
 		>
-			{#if temporalChange > 0}+{/if}{temporalChange}
+			{#if status.life > lastLife}+{/if}{status.life - lastLife}
 		</span>
 	{/if}
 
 	<button
 		class="absolute top-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center rounded-full"
-		onclick={() => command('life', 1)}
+		onclick={() => command('life', status.life + 1)}
 	>
 		<Plus class="size-6" />
 	</button>
 	<button
 		class="absolute bottom-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center rounded-full"
-		onclick={() => command('life', -1)}
+		onclick={() => command('life', status.life - 1)}
 	>
 		<Minus class="size-6" />
 	</button>
