@@ -2,6 +2,7 @@
 	import type { LifepadStatus } from '$lib/types';
 	import { cn } from '$lib/utils';
 	import { Minus, Plus } from '@lucide/svelte';
+	import { debounceState } from '../../utils.svelte';
 
 	type Props = {
 		status: LifepadStatus;
@@ -11,16 +12,7 @@
 
 	let { status, class: className, sendCommand }: Props = $props();
 
-	let lastLife = $state<number | undefined>();
-	let lastLifeTimeout: NodeJS.Timeout;
-	// if (!lastLife) {
-	// 	lastLife = status.life;
-	// }
-
-	// clearTimeout(lastLifeTimeout);
-	// lastLifeTimeout = setTimeout(() => {
-	// 	lastLife = undefined;
-	// }, 4000);
+	let lastLife = $derived.by(debounceState(() => status.life, 4000));
 </script>
 
 <div
@@ -32,7 +24,7 @@
 >
 	<span class="text-8xl font-bold">{status.life}</span>
 
-	{#if lastLife !== undefined}
+	{#if lastLife !== status.life}
 		<span
 			class="absolute top-1/2 right-1/5 flex -translate-y-1/2 items-center justify-center text-2xl font-bold"
 		>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PUBLIC_WS_URL } from '$env/static/public';
 	import LifePad from '$lib/components/LifePad.svelte';
 	import type { LifepadStatus } from '$lib/types';
 
@@ -18,6 +19,7 @@
 	let connected = $state(false);
 
 	let ws: WebSocket;
+	let reconnectTimeout: NodeJS.Timeout;
 
 	$effect(() => {
 		status.id && connectToWs(status.id);
@@ -25,8 +27,9 @@
 
 	function connectToWs(id: string) {
 		try {
+			clearTimeout(reconnectTimeout);
 			ws?.close();
-			ws = new WebSocket(`ws://localhost:5000/lifepad/${id}`);
+			ws = new WebSocket(`${PUBLIC_WS_URL}/lifepad/${id}`);
 
 			ws.onopen = () => {
 				console.log('WebSocket connected');
@@ -49,13 +52,15 @@
 			ws.onclose = () => {
 				console.log('WebSocket disconnected');
 				connected = false;
-				// Optionally reconnect after a delay
-				setTimeout(() => connectToWs(id), 3000);
+				// Reconnect after 5 seconds
+				reconnectTimeout = setTimeout(() => connectToWs(id), 5000);
 			};
 
 			ws.onerror = (error) => {
 				console.error('WebSocket error:', error);
 				connected = false;
+				// Reconnect after 5 seconds on error
+				reconnectTimeout = setTimeout(() => connectToWs(id), 5000);
 			};
 
 			return ws;
@@ -74,12 +79,21 @@
 	}
 
 	function sendCommand(cmd: string, payload: any) {
-		ws.send(JSON.stringify({ command: cmd, payload }));
+		try {
+			ws.send(JSON.stringify({ command: cmd, payload }));
+		} catch (error) {
+			console.error('Failed to send WebSocket message:', error);
+		}
+	}
+
+	function manageCommand(cmd: string, payload: any) {
+		if (connected) {
+			sendCommand(cmd, payload);
+		}
+		processCommand(cmd, payload);
 	}
 </script>
 
 <div class="h-dvh w-full">
-	{#if connected}
-		<LifePad {status} {sendCommand} class={className} />
-	{/if}
+	<LifePad {status} sendCommand={manageCommand} class={className} />
 </div>

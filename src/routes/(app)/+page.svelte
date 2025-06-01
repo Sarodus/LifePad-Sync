@@ -9,8 +9,11 @@
 
 	let lifepads = $state<LifepadStatus[]>([]);
 	let ws: WebSocket;
+	let reconnectTimeout: NodeJS.Timeout;
 
 	function connectToWs() {
+		clearTimeout(reconnectTimeout);
+		ws?.close();
 		ws = new WebSocket('ws://localhost:5000/lifepad');
 
 		ws.onmessage = (event) => {
@@ -19,6 +22,18 @@
 			if (data.command === 'status') {
 				lifepads = data.payload;
 			}
+		};
+
+		ws.onerror = (event) => {
+			console.error('WebSocket error:', event);
+			clearTimeout(reconnectTimeout);
+			reconnectTimeout = setTimeout(() => connectToWs(), 5000);
+		};
+
+		ws.onclose = (event) => {
+			console.error('WebSocket closed:', event);
+			clearTimeout(reconnectTimeout);
+			reconnectTimeout = setTimeout(() => connectToWs(), 5000);
 		};
 	}
 
