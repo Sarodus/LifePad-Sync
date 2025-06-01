@@ -23,6 +23,13 @@ class LifePad:
             self.background = payload.get('background')
             self.image = payload.get('image')
             self.foreground = payload.get('foreground')
+        elif command == 'image':
+            self.image = payload
+        elif command == 'background':
+            self.background = payload
+            self.image = ''
+        elif command == 'foreground':
+            self.foreground = payload
 
     def get_status(self):
         return {

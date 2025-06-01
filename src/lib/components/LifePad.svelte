@@ -20,13 +20,15 @@
 </script>
 
 <div
-	class={cn('relative flex size-80 items-center justify-center rounded-lg border', className)}
+	class={cn(
+		'relative flex size-80 items-center justify-center rounded-lg border bg-cover bg-center',
+		className
+	)}
 	style:background-color={status.background}
 	style:background-image="url({status.image})"
-	style:background-size="cover"
 	style:color={status.foreground}
 >
-	<span class="text-8xl font-bold">{status.life}</span>
+	<span class="text-8xl font-bold text-shadow-lg">{status.life}</span>
 
 	{#if lastLife !== status.life}
 		<span
@@ -40,17 +42,22 @@
 		class="absolute top-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center"
 		onclick={() => sendCommand?.('life', status.life + 1)}
 	>
-		<Plus class="size-6" />
+		<Plus class="size-6 drop-shadow-lg" />
 	</button>
 	<button
 		class="absolute bottom-0 flex size-10 h-1/2 w-full cursor-pointer items-center justify-center"
 		onclick={() => sendCommand?.('life', status.life - 1)}
 	>
-		<Minus class="size-6" />
+		<Minus class="size-6 drop-shadow-lg" />
 	</button>
 
 	{#if settingsOpen}
-		<LifePadSettings />
+		<LifePadSettings
+			sendCommand={(cmd, payload) => {
+				sendCommand?.(cmd, payload);
+				settingsOpen = false;
+			}}
+		/>
 	{/if}
 
 	<Button

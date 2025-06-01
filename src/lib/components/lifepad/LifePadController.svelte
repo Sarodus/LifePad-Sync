@@ -79,6 +79,19 @@
 			case 'life':
 				status.life = payload as number;
 				break;
+
+			case 'image':
+				status.image = payload as string;
+				break;
+
+			case 'background':
+				status.image = '';
+				status.background = payload as string;
+				break;
+
+			case 'foreground':
+				status.foreground = payload as string;
+				break;
 		}
 	}
 

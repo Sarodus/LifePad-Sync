@@ -50,7 +50,7 @@
 	</button>
 
 	{#if settingsOpen}
-		<LifePadSettings />
+		<LifePadSettings {sendCommand} {status} />
 	{/if}
 
 	<Button
